@@ -34,14 +34,13 @@ class Algorithms:
             self.dist_matrix[edge.v1, edge.v2] = edge.cost
             self.dist_matrix[edge.v2, edge.v1] = edge.cost
 
-        # for k in range(self.graph.num_of_verts):
-        #     for i in range(self.graph.num_of_verts):
-        #         for j in range(self.graph.num_of_verts):
-        #             print(i, j, k)
-        #             self.dist_matrix = min(
-        #                 self.dist_matrix[i][j],
-        #                 self.dist_matrix[i][k] + self.dist_matrix[k][j],
-        #             )
+        for k in range(self.graph.num_of_verts):
+            for i in range(self.graph.num_of_verts):
+                for j in range(self.graph.num_of_verts):
+                    self.dist_matrix[i][j] = min(
+                        self.dist_matrix[i][j],
+                        self.dist_matrix[i][k] + self.dist_matrix[k][j],
+                    )
 
     def brutForce(self, p: int) -> list[Vertex]:
         """
