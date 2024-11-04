@@ -18,21 +18,33 @@ class Algorithms:
             graph (Graph): graph which algorithms are working with
         """
         self.graph = graph
+
+    def create_dist_matrix(self, elongated: bool) -> None:
+        """
+        Make base distance matrix
+
+        Args:
+            elongated (bool): if we are making dist matrix for modified graph
+        """
         self.dist_matrix = np.full(
             (self.graph.num_of_verts, self.graph.num_of_verts), float(np.inf)
         )
-
-    def create_floyd_matrix(self) -> None:
-        """
-        Takes base distance matrix and enhance it with Floyd Warshall algorithm
-        """
 
         for i in range(self.graph.num_of_verts):
             self.dist_matrix[i][i] = 0
 
         for edge in self.graph.edges:
-            self.dist_matrix[edge.v1, edge.v2] = edge.cost
-            self.dist_matrix[edge.v2, edge.v1] = edge.cost
+            if elongated:
+                self.dist_matrix[edge.v1, edge.v2] = edge.new_cost
+                self.dist_matrix[edge.v2, edge.v1] = edge.new_cost
+            else:
+                self.dist_matrix[edge.v1, edge.v2] = edge.cost
+                self.dist_matrix[edge.v2, edge.v1] = edge.cost
+
+    def create_floyd_matrix(self) -> None:
+        """
+        Takes base distance matrix and enhance it with Floyd Warshall algorithm
+        """
 
         for k in range(self.graph.num_of_verts):
             for i in range(self.graph.num_of_verts):
@@ -97,7 +109,7 @@ class Algorithms:
         Elongates all edges in graph
 
         Args:
-            k (float):
+            k (float): scaling factor
 
         """
         for e in self.graph.edges:
