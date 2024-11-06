@@ -76,7 +76,7 @@ class Algorithms:
                         min_distance, self.dist_matrix[u.name][v.name]
                     )
 
-                total_cost += self.graph.vertices[u.name].weight
+                total_cost += self.graph.vertices[u.name].weight * min_distance
 
             if total_cost < min_cost:
                 min_cost = total_cost
@@ -112,5 +112,8 @@ class Algorithms:
             k (float): scaling factor
 
         """
+
         for e in self.graph.edges:
-            e.new_cost = e.cost / (1 - k * self.sum_fractions(e))
+            denominator = 1 - k * self.sum_fractions(e)
+
+            e.new_cost = e.cost / (denominator)
