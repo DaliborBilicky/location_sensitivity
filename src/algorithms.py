@@ -18,6 +18,7 @@ class Algorithms:
             graph (Graph): graph which algorithms are working with
         """
         self.graph = graph
+        self.ratios_list = []
 
     def create_dist_matrix(self, elongated: bool) -> None:
         """
@@ -84,36 +85,34 @@ class Algorithms:
 
         return best_medians
 
-    def sum_fractions(self, edge: Edge) -> float:
-        """
-        Sum all vertex cost divided by distances to edge
+    def fill_ratio_list(self):
+        for e in self.graph.edges:
+            frac_sum = 0.0
 
-        Args:
-            edge (Edge): edge to witch distance its calculated.
+            for v in self.graph.vertices:
+                d_v1 = self.dist_matrix[e.v1][v.name]
+                d_v2 = self.dist_matrix[e.v2][v.name]
+                d_e_v = min(d_v1, d_v2) + (e.cost / 2)
+                frac = v.weight / d_e_v
+                frac_sum += frac
 
-        Returns:
-            summed fractions
-        """
-        frac_sum = 0.0
+            self.ratios_list.append(frac_sum)
 
-        for v in self.graph.vertices:
-            d_v1 = self.dist_matrix[edge.v1][v.name]
-            d_v2 = self.dist_matrix[edge.v2][v.name]
-            d_e_v = min(d_v1, d_v2) + (edge.cost / 2)
-            frac = self.graph.vertices[v.name].weight / d_e_v
-            frac_sum += frac
-        return frac_sum
-
-    def gravitational_model(self, k: float) -> None:
+    def gravitational_formula(self, k: float) -> None:
         """
         Elongates all edges in graph
 
         Args:
             k (float): scaling factor
-
         """
 
-        for e in self.graph.edges:
-            denominator = 1 - k * self.sum_fractions(e)
+        self.fill_ratio_list()
 
-            e.new_cost = e.cost / (denominator)
+        denominator = 0.0
+        for i in range(len(self.ratios_list)):
+            denominator += self.ratios_list[i]
+
+        i = 0
+        for e in self.graph.edges:
+            e.new_cost = e.cost / (1 - k * (self.ratios_list[i] / denominator))
+            i += 1
