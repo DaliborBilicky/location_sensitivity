@@ -1,118 +1,160 @@
+import time
 from itertools import combinations
 
 import numpy as np
+from scipy.sparse import csr_matrix
+from scipy.sparse.csgraph import floyd_warshall
 
 from graph import Edge, Graph, Vertex
 
 
-class Algorithms:
+def read_edges(file_path: str) -> list[Edge]:
     """
-    Class for storing algorithms.
+    Reads file with records of edges.
+
+    Args:
+        file_path (str): path to file.
+
+    Returns:
+        list of read edges.
     """
+    edges = []
+    with open(file_path, "r") as file:
+        file.readline()
+        for line in file:
+            vertex_1, vertex_2, weight = map(int, line.split())
+            edges.append(Edge(vertex_1 - 1, vertex_2 - 1, float(weight)))
 
-    def __init__(self, graph: Graph) -> None:
-        """
-        Constructor for class Algorithms.
+    return edges
 
-        Args:
-            graph (Graph): graph which algorithms are working with
-        """
-        self.graph = graph
-        self.ratios_list = []
 
-    def create_dist_matrix(self, elongated: bool) -> None:
-        """
-        Make base distance matrix
+def read_vertices(file_path: str) -> list[Vertex]:
+    """
+    Reads file with records of vertices.
 
-        Args:
-            elongated (bool): if we are making dist matrix for modified graph
-        """
-        self.dist_matrix = np.full(
-            (self.graph.num_of_verts, self.graph.num_of_verts), float(np.inf)
-        )
+    Args:
+        file_path (str): path to file.
 
-        for i in range(self.graph.num_of_verts):
-            self.dist_matrix[i][i] = 0
-
-        for edge in self.graph.edges:
-            if elongated:
-                self.dist_matrix[edge.v1, edge.v2] = edge.new_cost
-                self.dist_matrix[edge.v2, edge.v1] = edge.new_cost
+    Returns:
+        list of read vertices.
+    """
+    vertices = []
+    with open(file_path, "r") as file:
+        file.readline()
+        for line in file:
+            parts = line.strip().split(maxsplit=2)
+            label = int(parts[0]) - 1
+            if len(parts) < 3:
+                vertices.append(Vertex(label))
             else:
-                self.dist_matrix[edge.v1, edge.v2] = edge.cost
-                self.dist_matrix[edge.v2, edge.v1] = edge.cost
+                weight = float(parts[1])
+                name = parts[2]
+                vertices.append(Vertex(label, weight, name))
 
-    def create_floyd_matrix(self) -> None:
-        """
-        Takes base distance matrix and enhance it with Floyd Warshall algorithm
-        """
+    return vertices
 
-        for k in range(self.graph.num_of_verts):
-            for i in range(self.graph.num_of_verts):
-                for j in range(self.graph.num_of_verts):
-                    self.dist_matrix[i][j] = min(
-                        self.dist_matrix[i][j],
-                        self.dist_matrix[i][k] + self.dist_matrix[k][j],
-                    )
 
-    def brutForce(self, p: int) -> list[Vertex]:
-        """
-        Create possible solution using Brut-force method
+def create_dist_matrix(edges: list[Edge], num_of_verts: int) -> np.ndarray:
+    """
+    Make base distance matrix
 
-        Args:
-            p (int): Number of medians to choose.
+    Args:
+        elongated (bool): if we are making dist matrix for modified graph
+    """
 
-        Returns:
-            medians
-        """
+    dist_matrix = np.full((num_of_verts, num_of_verts), float(np.inf))
 
-        min_cost = float(np.inf)
-        best_medians = []
-        for medians in combinations(self.graph.vertices, p):
-            total_cost = 0
-            for u in self.graph.vertices:
-                min_distance = float(np.inf)
-                for v in medians:
-                    min_distance = min(
-                        min_distance, self.dist_matrix[u.name][v.name]
-                    )
+    for i in range(num_of_verts):
+        dist_matrix[i][i] = 0
 
-                total_cost += self.graph.vertices[u.name].weight * min_distance
+    for e in edges:
+        dist_matrix[e.v1, e.v2] = e.cost
+        dist_matrix[e.v2, e.v1] = e.cost
 
-            if total_cost < min_cost:
-                min_cost = total_cost
-                best_medians = list(medians)
+    sparse_matrix = csr_matrix(dist_matrix)
+    dist_matrix = floyd_warshall(csgraph=sparse_matrix, directed=False)
 
-        return best_medians
+    return dist_matrix
 
-    def fill_ratio_list(self):
-        for e in self.graph.edges:
-            frac_sum = 0.0
 
-            for v in self.graph.vertices:
-                d_v1 = self.dist_matrix[e.v1][v.name]
-                d_v2 = self.dist_matrix[e.v2][v.name]
-                d_e_v = min(d_v1, d_v2) + (e.cost / 2)
-                frac = v.weight / d_e_v
-                frac_sum += frac
+def brutForce(graph: Graph, p: int) -> list[Vertex]:
+    """
+    Create possible solution using Brut-force method
 
-            self.ratios_list.append(frac_sum)
+    Args:
+        p (int): Number of medians to choose.
 
-    def gravitational_formula(self, k: float) -> None:
-        """
-        Elongates all edges in graph
+    Returns:
+        medians
+    """
 
-        Args:
-            k (float): scaling factor
-        """
+    min_cost = float(np.inf)
+    best_medians = []
+    for medians in combinations(graph.vertices, p):
+        total_cost = 0
+        for u in graph.vertices:
+            min_distance = float(np.inf)
+            for v in medians:
+                min_distance = min(
+                    min_distance, graph.dist_matrix[u.label][v.label]
+                )
 
-        self.fill_ratio_list()
+            total_cost += graph.vertices[u.label].weight * min_distance
 
-        denominator = 0.0
-        for i in range(len(self.ratios_list)):
-            denominator += self.ratios_list[i]
+        if total_cost < min_cost:
+            min_cost = total_cost
+            best_medians = list(medians)
 
-        i = 0
-        for e in self.graph.edges:
-            e.new_cost = e.cost / (1 - k * (self.ratios_list[i] / denominator))
-            i += 1
+    return best_medians
+
+
+def get_ratio_list(graph: Graph) -> list[float]:
+    ratios_list = []
+    for e in graph.edges:
+        frac_sum = 0.0
+
+        for v in graph.vertices:
+            d_v1 = graph.dist_matrix[e.v1][v.label]
+            d_v2 = graph.dist_matrix[e.v2][v.label]
+            d_e_v = min(d_v1, d_v2) + (e.cost / 2)
+            frac = v.weight / d_e_v
+            frac_sum += frac
+
+        ratios_list.append(frac_sum)
+
+    return ratios_list
+
+
+def gravitational_formula(graph: Graph, k: float) -> list[Edge]:
+    """
+    Elongates all edges in graph
+
+    Args:
+        k (float): scaling factor
+    """
+
+    elong_edges = []
+
+    ratios_list = get_ratio_list(graph)
+
+    denominator = 0.0
+    x = 0.0
+    inverted_x = 0.0
+    inverted_min_x = float(np.inf)
+    for i in range(len(ratios_list)):
+        denominator += ratios_list[i]
+
+    for i in range(len(ratios_list)):
+        x = ratios_list[i] / denominator
+        inverted_x = 1 / x
+        inverted_min_x = min(inverted_min_x, inverted_x)
+
+    if k >= inverted_min_x:
+        print("K is too big.")
+        return graph.edges
+
+    for e in graph.edges:
+        edge = Edge(e.v1, e.v2, e.cost / (1 - k * x))
+        elong_edges.append(edge)
+
+    return elong_edges
