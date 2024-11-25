@@ -1,3 +1,8 @@
+import numpy as np
+
+import algorithms as alg
+
+
 class Edge:
     """
     Class for storing data for edge.
@@ -15,7 +20,6 @@ class Edge:
         self.v1 = v1
         self.v2 = v2
         self.cost = cost
-        self.new_cost = cost
 
     def __str__(self) -> str:
         """
@@ -32,7 +36,9 @@ class Vertex:
     Class for storing data for vertex.
     """
 
-    def __init__(self, name: int, weight: float) -> None:
+    def __init__(
+        self, label: int, weight: float = 0.0, name: str = "Junction"
+    ) -> None:
         """
         Constructor for class Vertex.
 
@@ -40,8 +46,9 @@ class Vertex:
             name (int): name of vertex.
             weight (float): vertex weight.
         """
-        self.name = name
+        self.label = label
         self.weight = weight
+        self.name = name
 
     def __str__(self) -> str:
         """
@@ -50,7 +57,7 @@ class Vertex:
         Returns:
             Vertex in string.
         """
-        return f"{self.name}: {self.weight}"
+        return f"{self.label}: {self.weight}"
 
 
 class Graph:
@@ -58,16 +65,28 @@ class Graph:
     Class for storing data of Graph.
     """
 
-    def __init__(self, folder: str) -> None:
+    def __init__(self, region: str) -> None:
         """
         Constructor for class Graph.
 
         Args:
             folder (str): folder name containing graph
+
+            f"./res/graphs/{folder}/vertices.txt"
+            f"./res/graphs/{folder}/edges.txt"
         """
-        self.vertices = read_vertices(f"./res/graphs/{folder}/vertices.txt")
-        self.edges = read_edges(f"./res/graphs/{folder}/edges.txt")
+        self.vertices = alg.read_vertices(
+            f"./res/Kraje_input_data/VUC140318_{region}_nodes.txt"
+        )
+        self.edges = alg.read_edges(
+            f"./res/Kraje_input_data/VUC140318_{region}_edges.txt"
+        )
+        self.elong_edges = self.edges
         self.num_of_verts = len(self.vertices)
+
+        self.dist_matrix = alg.create_dist_matrix(self.edges, self.num_of_verts)
+
+        self.elong_dist_matrix = self.dist_matrix
 
     def __str__(self) -> str:
         """
@@ -83,43 +102,3 @@ class Graph:
         for vertex in self.vertices:
             str_vertecis.append(str(vertex) + "\n")
         return "".join(str_edges) + "\n" + "".join(str_vertecis)
-
-
-def read_edges(file_path: str) -> list[Edge]:
-    """
-    Reads file with records of edges.
-
-    Args:
-        file_path (str): path to file.
-
-    Returns:
-        list of read edges.
-    """
-    edges = []
-    with open(file_path, "r") as file:
-        for line in file:
-            vertex_1, vertex_2, weight = map(int, line.split())
-            edges.append(Edge(vertex_1, vertex_2, float(weight)))
-
-    return edges
-
-
-def read_vertices(file_path: str) -> list[Vertex]:
-    """
-    Reads file with records of vertices.
-
-    Args:
-        file_path (str): path to file.
-
-    Returns:
-        list of read vertices.
-    """
-    vertices = []
-    name = 0
-    with open(file_path, "r") as file:
-        for line in file:
-            weight = line.strip()
-            vertices.append(Vertex(name, float(weight)))
-            name += 1
-
-    return vertices
