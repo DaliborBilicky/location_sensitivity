@@ -1,5 +1,3 @@
-import numpy as np
-
 import algorithms as alg
 
 
@@ -72,8 +70,8 @@ class Graph:
         Args:
             folder (str): folder name containing graph
 
-            f"./res/graphs/{folder}/vertices.txt"
-            f"./res/graphs/{folder}/edges.txt"
+            f"./res/graphs/easy/vertices.txt"
+            f"./res/graphs/easy/edges.txt"
         """
         self.vertices = alg.read_vertices(
             f"./res/Kraje_input_data/VUC140318_{region}_nodes.txt"

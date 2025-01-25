@@ -1,7 +1,7 @@
-import time
 from itertools import combinations
 
 import numpy as np
+import pulp as pl
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import floyd_warshall
 
@@ -75,6 +75,48 @@ def create_dist_matrix(edges: list[Edge], num_of_verts: int) -> np.ndarray:
     dist_matrix = floyd_warshall(csgraph=sparse_matrix, directed=False)
 
     return dist_matrix
+
+
+def solve_p_median_pulp(
+    dist_matrix: np.ndarray, vertices: list[Vertex], p: int
+):
+    matrix = dist_matrix
+    n, m = matrix.shape
+
+    problem = pl.LpProblem("Weighted_p-Median", pl.LpMinimize)
+
+    x = pl.LpVariable.dicts(
+        "x",
+        [(i, j) for i in range(n) for j in range(m)],
+        lowBound=0,
+        upBound=1,
+        cat="Binary",
+    )
+    y = pl.LpVariable.dicts(
+        "y", [j for j in range(m)], lowBound=0, upBound=1, cat="Binary"
+    )
+
+    problem += pl.lpSum(
+        vertices[i].weight * matrix[i][j] * x[(i, j)]
+        for i in range(n)
+        for j in range(m)
+    )
+
+    for i in range(n):
+        problem += pl.lpSum(x[(i, j)] for j in range(m)) == 1
+
+    for i in range(n):
+        for j in range(m):
+            problem += x[(i, j)] <= y[j]
+
+    problem += pl.lpSum(y[j] for j in range(m)) == p
+
+    problem.solve()
+
+    x_result = [[x[(i, j)].varValue for j in range(m)] for i in range(n)]
+    y_result = [y[j].varValue for j in range(m)]
+
+    return x_result, y_result
 
 
 def brutForce(graph: Graph, p: int) -> list[Vertex]:
@@ -153,8 +195,10 @@ def gravitational_formula(graph: Graph, k: float) -> list[Edge]:
         print("K is too big.")
         return graph.edges
 
+    i = 0
     for e in graph.edges:
-        edge = Edge(e.v1, e.v2, e.cost / (1 - k * x))
+        edge = Edge(e.v1, e.v2, e.cost / (1 - k * ratios_list[i] / denominator))
         elong_edges.append(edge)
+        i += 1
 
     return elong_edges
