@@ -151,7 +151,7 @@ def brutForce(graph: Graph, p: int) -> list[Vertex]:
 
 
 def get_ratio_list(graph: Graph) -> list[float]:
-    ratios_list = []
+    frac_list = []
     for e in graph.edges:
         frac_sum = 0.0
 
@@ -162,12 +162,12 @@ def get_ratio_list(graph: Graph) -> list[float]:
             frac = v.weight / d_e_v
             frac_sum += frac
 
-        ratios_list.append(frac_sum)
+        frac_list.append(frac_sum)
 
-    return ratios_list
+    return frac_list
 
 
-def gravitational_formula(graph: Graph, k: float) -> list[Edge]:
+def gravitational_formula(graph: Graph, k: float):
     """
     Elongates all edges in graph
 
@@ -177,27 +177,26 @@ def gravitational_formula(graph: Graph, k: float) -> list[Edge]:
 
     elong_edges = []
 
-    ratios_list = get_ratio_list(graph)
+    frac_list = get_ratio_list(graph)
 
     denominator = 0.0
     x = 0.0
     inverted_x = 0.0
     inverted_min_x = float(np.inf)
-    for i in range(len(ratios_list)):
-        denominator += ratios_list[i]
+    for i in range(len(frac_list)):
+        denominator += frac_list[i]
 
-    for i in range(len(ratios_list)):
-        x = ratios_list[i] / denominator
+    for i in range(len(frac_list)):
+        x = frac_list[i] / denominator
         inverted_x = 1 / x
         inverted_min_x = min(inverted_min_x, inverted_x)
 
     if k >= inverted_min_x:
-        print("K is too big.")
-        return graph.edges
+        return None
 
     i = 0
     for e in graph.edges:
-        edge = Edge(e.v1, e.v2, e.cost / (1 - k * ratios_list[i] / denominator))
+        edge = Edge(e.v1, e.v2, e.cost / (1 - k * frac_list[i] / denominator))
         elong_edges.append(edge)
         i += 1
 
