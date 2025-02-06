@@ -11,7 +11,7 @@ def main() -> None:
     graph = gh.Graph(REGION)
 
     k = 0
-    step = 0.2
+    step = 2
 
     while True:
         elong_edges = alg.gravitational_formula(graph, k)
@@ -36,8 +36,15 @@ def main() -> None:
                 )
             )
             file.write("\n")
-            file.write(str(elong_edges))
-            file.write("\n")
+            counter = 0
+            for edge in elong_edges:
+                file.write(str(edge))
+                counter += 1
+                if counter == 5:
+                    file.write("\n")
+                    counter = 0
+
+            file.write("\n_____________________________________________\n")
             file.write("\n")
 
         k += step
