@@ -177,34 +177,5 @@ def get_k_upper_limit(frac_list: list, denominator: float) -> float:
 
 
 def run_test(graph: Graph, p: int):
-    y_results = []
-
-    frac_list = get_frac_list(graph)
-    denominator = sum(f for f in frac_list)
-    k_upper_limit = get_k_upper_limit(frac_list, denominator)
-
-    k = 0
-    step = k_upper_limit
-
-    while not math.isclose(k, k_upper_limit, rel_tol=0.01):
-        print(k_upper_limit)
-        print(k)
-        i = 0
-        elong_edges = []
-
-        for e in graph.edges:
-            edge = Edge(
-                e.v1, e.v2, e.cost / (1 - k * frac_list[i] / denominator)
-            )
-            elong_edges.append(edge)
-            i += 1
-
-        elong_dist_matrix = create_dist_matrix(elong_edges, graph.num_of_verts)
-
-        _, y = solve_p_median_pulp(elong_dist_matrix, graph.vertices, p)
-        print([(index + 1) for index, value in enumerate(y) if value == 1.0])
-
-        step /= 2
-        k += step
 
     return y_results
