@@ -1,3 +1,4 @@
+import math
 from itertools import combinations
 
 import numpy as np
@@ -150,7 +151,7 @@ def brutForce(graph: Graph, p: int) -> list[Vertex]:
     return best_medians
 
 
-def get_ratio_list(graph: Graph) -> list[float]:
+def get_frac_list(graph: Graph) -> list[float]:
     frac_list = []
     for e in graph.edges:
         frac_sum = 0.0
@@ -167,37 +168,43 @@ def get_ratio_list(graph: Graph) -> list[float]:
     return frac_list
 
 
-def gravitational_formula(graph: Graph, k: float):
-    """
-    Elongates all edges in graph
+def get_k_upper_limit(frac_list: list, denominator: float) -> float:
+    x_min = float(np.inf)
+    for fraction in frac_list:
+        x = denominator / fraction
+        x_min = min(x_min, x)
+    return x_min
 
-    Args:
-        k (float): scaling factor
-    """
 
-    elong_edges = []
+def run_test(graph: Graph, p: int):
+    y_results = []
 
-    frac_list = get_ratio_list(graph)
+    frac_list = get_frac_list(graph)
+    denominator = sum(f for f in frac_list)
+    k_upper_limit = get_k_upper_limit(frac_list, denominator)
 
-    denominator = 0.0
-    x = 0.0
-    inverted_x = 0.0
-    inverted_min_x = float(np.inf)
-    for i in range(len(frac_list)):
-        denominator += frac_list[i]
+    k = 0
+    step = k_upper_limit
 
-    for i in range(len(frac_list)):
-        x = frac_list[i] / denominator
-        inverted_x = 1 / x
-        inverted_min_x = min(inverted_min_x, inverted_x)
+    while not math.isclose(k, k_upper_limit, rel_tol=0.01):
+        print(k_upper_limit)
+        print(k)
+        i = 0
+        elong_edges = []
 
-    if k >= inverted_min_x:
-        return None
+        for e in graph.edges:
+            edge = Edge(
+                e.v1, e.v2, e.cost / (1 - k * frac_list[i] / denominator)
+            )
+            elong_edges.append(edge)
+            i += 1
 
-    i = 0
-    for e in graph.edges:
-        edge = Edge(e.v1, e.v2, e.cost / (1 - k * frac_list[i] / denominator))
-        elong_edges.append(edge)
-        i += 1
+        elong_dist_matrix = create_dist_matrix(elong_edges, graph.num_of_verts)
 
-    return elong_edges
+        _, y = solve_p_median_pulp(elong_dist_matrix, graph.vertices, p)
+        print([(index + 1) for index, value in enumerate(y) if value == 1.0])
+
+        step /= 2
+        k += step
+
+    return y_results
