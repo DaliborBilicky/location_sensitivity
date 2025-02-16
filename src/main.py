@@ -1,13 +1,12 @@
 import math
 import statistics as stt
+import sys
 
 import numpy as np
 
 import algorithms as alg
 import graph as gh
 
-REGION = "BA"
-P = 7
 PREVISION = 0.01
 
 
@@ -15,6 +14,15 @@ def main() -> None:
     """
     Main function.
     """
+    if len(sys.argv) < 4:
+        raise ValueError(
+            "Too few arguments! Usage: python src/main.py <region acronym> <P> <name of result file>"
+        )
+
+    REGION = sys.argv[1]
+    P = int(sys.argv[2])
+    RESULT = sys.argv[3]
+
     graph = gh.Graph(REGION)
 
     frac_list = alg.get_frac_list(graph)
@@ -56,7 +64,7 @@ def main() -> None:
             mode_cost = stt.mode(cost_differ)
 
             y = [(index + 1) for index, value in enumerate(y) if value == 1.0]
-            with open("results/result.txt", "a") as file:
+            with open(f"results/{RESULT}.txt", "a") as file:
                 file.write(
                     f"k: {k:.4f} k-lim: {k_upper_limit:.4f} "
                     + f"min: {min_cost:.4f} max: {max_cost:.4f} "
