@@ -1,4 +1,3 @@
-import math
 from itertools import combinations
 
 import numpy as np
@@ -7,6 +6,19 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import floyd_warshall
 
 from graph import Edge, Graph, Vertex
+
+
+def sort_append(edges: list[Edge], edge: Edge):
+    low, high = 0, len(edges)
+
+    while low < high:
+        mid = (low + high) // 2
+        if edges[mid].cost < edge.cost:
+            low = mid + 1
+        else:
+            high = mid
+
+    edges.insert(low, edge)
 
 
 def read_edges(file_path: str) -> list[Edge]:
@@ -120,7 +132,7 @@ def solve_p_median_pulp(
     return x_result, y_result
 
 
-def brutForce(graph: Graph, p: int) -> list[Vertex]:
+def brut_force(graph: Graph, p: int) -> list[Vertex]:
     """
     Create possible solution using Brut-force method
 
@@ -168,7 +180,7 @@ def get_frac_list(graph: Graph) -> list[float]:
     return frac_list
 
 
-def get_k_upper_limit(frac_list: list, denominator: float) -> float:
+def get_k_upper_limit(frac_list: list[float], denominator: float) -> float:
     x_min = float(np.inf)
     for fraction in frac_list:
         x = denominator / fraction
@@ -176,6 +188,7 @@ def get_k_upper_limit(frac_list: list, denominator: float) -> float:
     return x_min
 
 
-def run_test(graph: Graph, p: int):
-
-    return y_results
+# def get_percentage(edges: list[Edge], elong_edges: list[Edge], count: int) -> list[float]:
+#     list_of_percentages = []
+#     for edge in edges:
+#         if (
