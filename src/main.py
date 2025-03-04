@@ -26,12 +26,16 @@ def parse_arguments() -> tuple[str, int]:
         if p <= 0:
             raise ValueError("P must be a positive integer.")
     except ValueError as e:
-        raise ValueError("Invalid value for P. It must be a positive integer.") from e
+        raise ValueError(
+            "Invalid value for P. It must be a positive integer."
+        ) from e
 
     return region, p
 
 
-def calculate_k_values(graph: gh.Graph, frac_list: list[float], denominator: float):
+def calculate_k_values(
+    graph: gh.Graph, frac_list: list[float], denominator: float
+):
     """
     Starts threads for calculating all K values and the first K value.
 
