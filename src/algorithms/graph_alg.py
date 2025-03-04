@@ -7,13 +7,17 @@ import graph as gh
 
 def read_edges(file_path: str) -> list[gh.Edge]:
     """
-    Reads file with records of edges.
+    Reads edges from a file and returns them as a list of Edge objects.
+
+    The input file is expected to have lines with three integers each:
+        vertex_1 vertex_2 weight
+    Vertices are assumed to be 1-indexed in the file and are converted to 0-indexing.
 
     Args:
-        file_path (str): path to file.
+        file_path (str): The path to the file containing edge data.
 
     Returns:
-        list of read edges.
+        list[gh.Edge]: A list of Edge objects representing the graph's edges.
     """
     edges = []
     with open(file_path, "r") as file:
@@ -27,13 +31,18 @@ def read_edges(file_path: str) -> list[gh.Edge]:
 
 def read_vertices(file_path: str) -> list[gh.Vertex]:
     """
-    Reads file with records of vertices.
+    Reads vertices from a file and returns them as a list of Vertex objects.
+
+    The input file should have lines in the format:
+        label weight name
+    The label is mandatory, while weight and name are optional.
+    Vertices are assumed to be 1-indexed in the file and are converted to 0-indexing.
 
     Args:
-        file_path (str): path to file.
+        file_path (str): The path to the file containing vertex data.
 
     Returns:
-        list of read vertices.
+        list[gh.Vertex]: A list of Vertex objects with label, weight, and name properties.
     """
     vertices = []
     with open(file_path, "r") as file:
@@ -53,16 +62,21 @@ def read_vertices(file_path: str) -> list[gh.Vertex]:
 
 def create_dist_matrix(edges: list[gh.Edge], num_of_verts: int) -> np.ndarray:
     """
-    Make base distance matrix
+    Creates a distance matrix for the given edges and vertices using the Floyd-Warshall algorithm.
+
+    The resulting matrix contains the shortest path distances between all pairs of vertices.
+    Diagonal elements are 0, and non-connected vertices have a distance of infinity.
 
     Args:
-        elongated (bool): if we are making dist matrix for modified graph
-    """
+        edges (list[gh.Edge]): A list of edges connecting vertices in the graph.
+        num_of_verts (int): The total number of vertices in the graph.
 
+    Returns:
+        np.ndarray: A 2D array representing the shortest path distance matrix.
+    """
     dist_matrix = np.full((num_of_verts, num_of_verts), float(np.inf))
 
-    for i in range(num_of_verts):
-        dist_matrix[i][i] = 0
+    np.fill_diagonal(dist_matrix, 0)
 
     for e in edges:
         dist_matrix[e.v1, e.v2] = e.cost
