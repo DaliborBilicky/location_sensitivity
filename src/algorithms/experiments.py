@@ -1,7 +1,9 @@
 import math
-import statistics as stt
 
 import algorithms as alg
+
+TOLERANCE = 0.001
+PRECISION = 0.01
 
 
 def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
@@ -20,11 +22,13 @@ def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
     """
     k = 0
     step = k_upper_limit / 2
-    y_previous = alg.pulp_solve_p_median(
+    previous_medians = alg.pulp_solve_p_median(
         graph.dist_matrix, graph.vertices, graph.p
     )
+    elong_edges = []
+    medians = []
 
-    while step >= 0.1:
+    while step >= PRECISION:
         k += step
 
         elong_edges = alg.get_elong_edges(
@@ -35,12 +39,22 @@ def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
             elong_edges, graph.num_of_verts
         )
 
-        y = alg.pulp_solve_p_median(elong_dist_matrix, graph.vertices, graph.p)
-        print(f"k = {k:.5f} => {y}")
+        medians = alg.pulp_solve_p_median(
+            elong_dist_matrix, graph.vertices, graph.p, True
+        )
 
-        if y != y_previous:
+        if medians != previous_medians:
             k -= step
             step /= 2
+
+    cost_ratios = [
+        elong_edges[i].cost / graph.edges[i].cost
+        for i in range(len(elong_edges))
+    ]
+
+    alg.output_solution(
+        k, k_upper_limit, cost_ratios, medians, "calculate-first-k"
+    )
 
 
 def calculate_all_ks(graph, frac_list, denominator, k_upper_limit):
@@ -60,10 +74,10 @@ def calculate_all_ks(graph, frac_list, denominator, k_upper_limit):
     """
     k = 0
     step = k_upper_limit
-    y_previous = []
+    previous_medians = []
     edges_previous = graph.edges
 
-    while not math.isclose(k, k_upper_limit, rel_tol=0.001):
+    while not math.isclose(k, k_upper_limit, rel_tol=TOLERANCE):
         elong_edges = alg.get_elong_edges(
             graph.edges, frac_list, (k / denominator)
         )
@@ -72,25 +86,19 @@ def calculate_all_ks(graph, frac_list, denominator, k_upper_limit):
             elong_edges, graph.num_of_verts
         )
 
-        y = alg.pulp_solve_p_median(elong_dist_matrix, graph.vertices, graph.p)
+        medians = alg.pulp_solve_p_median(
+            elong_dist_matrix, graph.vertices, graph.p, True
+        )
 
-        if y_previous != y:
-            y_previous = y
-            cost_differ = [
+        if previous_medians != medians:
+            previous_medians = medians
+            cost_ratios = [
                 elong_edges[i].cost / edges_previous[i].cost
                 for i in range(len(elong_edges))
             ]
 
-            min_cost = min(cost_differ)
-            max_cost = max(cost_differ)
-            mean_cost = stt.mean(cost_differ)
-            mode_cost = stt.mode(cost_differ)
-
-            print(
-                f"\nk: {k:.4f} k-lim: {k_upper_limit:.4f} "
-                f"min: {min_cost:.4f} max: {max_cost:.4f} "
-                f"mean: {mean_cost:.4f} mode: {mode_cost:.4f}"
-                f"\n{y}\n"
+            alg.output_solution(
+                k, k_upper_limit, cost_ratios, medians, "calculate-all-ks"
             )
 
         step /= 2
