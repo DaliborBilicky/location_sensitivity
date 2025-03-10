@@ -53,7 +53,17 @@ def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
     ]
 
     alg.output_solution(
-        k, k_upper_limit, cost_ratios, medians, "calculate-first-k"
+        k,
+        k_upper_limit,
+        cost_ratios,
+        medians,
+        f"{graph.region}-{graph.p}-calculate-first-k",
+    )
+    alg.output_edge_behavior(
+        graph.edges,
+        elong_edges,
+        medians,
+        f"{graph.region}-{graph.p}-calculate-first-k",
     )
 
 
@@ -98,7 +108,17 @@ def calculate_all_ks(graph, frac_list, denominator, k_upper_limit):
             ]
 
             alg.output_solution(
-                k, k_upper_limit, cost_ratios, medians, "calculate-all-ks"
+                k,
+                k_upper_limit,
+                cost_ratios,
+                medians,
+                f"{graph.region}-{graph.p}-calculate-all-ks",
+            )
+            alg.output_edge_behavior(
+                edges_previous,
+                elong_edges,
+                medians,
+                f"{graph.region}-{graph.p}-calculate-all-ks",
             )
 
         step /= 2

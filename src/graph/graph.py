@@ -25,8 +25,8 @@ class Graph:
             f"./res/Kraje_input_data/VUC140318_{region}_edges.txt"
         )
         self.num_of_verts = len(self.vertices)
-
         self.dist_matrix = alg.create_dist_matrix(self.edges, self.num_of_verts)
+        self.region = region
         self.p = p
 
     def __str__(self) -> str:
