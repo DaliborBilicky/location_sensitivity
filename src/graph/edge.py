@@ -26,4 +26,4 @@ class Edge:
         Returns:
             str: A human-readable string representation of the edge.
         """
-        return f"({self.v1})--{self.cost}--({self.v2})"
+        return f"({self.v1})--{self.cost:.4f}--({self.v2})"

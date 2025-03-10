@@ -30,8 +30,9 @@ def output_solution(
 
     with open(f"results/{file}.txt", "a") as f:
         f.write(
-            f"k: {k:.4f} upper limit: {k_lim:.4f}\n"
-            f"Weighted p-medians: {medians}\n"
+            "----------\n"
+            f"k: {k:.4f}, upper limit: {k_lim:.4f}\n"
+            f"Weighted p-medians:\n{medians}\n"
             f"Average speed for ambulance: {AVG_SPEED}\n"
             f"Min speed decline: {minimum:.4f}\n"
             f"Max speed decline: {maximum:.4f}\n"
@@ -47,7 +48,7 @@ def output_edge_behavior(
     file: str,
 ):
     """
-    Outputs the edge elongation behavior, including smallest and biggest ratio changes.
+    Outputs the edge elongation behavior, including smallest and biggest ratio changes, and incident edges.
 
     Args:
         original_edges (list[gh.Edge]): The original edges.
@@ -61,29 +62,42 @@ def output_edge_behavior(
         edges_with_ratios, key=lambda pair: pair[1].cost / pair[0].cost
     )
 
-    smallest_ratio = sorted_edges[:10]
-    biggest_ratio = sorted_edges[-10:]
+    smallest_decline = sorted_edges[:10]
+    biggest_decline = sorted_edges[-10:]
 
     incident_edges = [
-        e for e in original_edges if e.v1 in medians or e.v2 in medians
+        (original, elongated)
+        for original, elongated in zip(original_edges, elongated_edges)
+        if original.v1 in medians or original.v2 in medians
+    ]
+
+    incident_edge_ratios = [
+        (original, elongated, elongated.cost / original.cost)
+        for original, elongated in incident_edges
     ]
 
     with open(f"results/{file}.txt", "a") as f:
 
         def write_zipped_edges(label, zipped_edges):
-            f.write(f"{label}\n")
+            f.write(
+                "----------\n"
+                f"{label}\nSpeed decline, edge -> elongated cost\n"
+            )
             for original, elongated in zipped_edges:
                 ratio = elongated.cost / original.cost
-                f.write(
-                    f"Ratio: {ratio:.4f}, "
-                    f"{original} -> {elongated.cost:.4f}\n"
-                )
+                speed = AVG_SPEED - AVG_SPEED / ratio
+                f.write(f"{speed:.4f}, {original} -> {elongated.cost:.4f}\n")
 
-        write_zipped_edges("Smallest cost differences:", smallest_ratio)
-        write_zipped_edges("Biggest cost differences:", biggest_ratio)
+        write_zipped_edges("Smallest speed declines:", smallest_decline)
+        write_zipped_edges("Biggest speed declines:", biggest_decline)
 
         f.write(
-            f"Edges incident to medians:\n"
-            + "\n".join(map(str, incident_edges))
-            + "\n\n"
+            "----------\n"
+            + "Incident edges to medians:\n"
+            + "Speed decline, edge -> elongated cost\n"
         )
+
+        for original, elongated, ratio in incident_edge_ratios:
+            speed = AVG_SPEED - AVG_SPEED / ratio
+            f.write(f"{speed:.4f}, {original} -> {elongated.cost:.4f}\n")
+        f.write("\n")

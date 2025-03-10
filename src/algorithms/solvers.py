@@ -106,10 +106,12 @@ def pulp_solve_p_median(
     selected_medians = [j for j in range(m) if y[j].varValue == 1.0]
 
     if output:
-        print(f"Solver Status: {pl.LpStatus[problem.status]}")
-        print(f"Time Taken: {time.time() - start_time:.4f} seconds")
-        print(f"Objective Value: {pl.value(problem.objective):.4f}")
-        print(f"Selected Medians: {selected_medians}")
+        print(
+            f"Solver Status: {pl.LpStatus[problem.status]}\n"
+            f"Time Taken: {time.time() - start_time:.4f} seconds\n"
+            f"Objective Value: {pl.value(problem.objective):.4f}\n"
+            f"Selected Medians:\n{selected_medians}\n"
+        )
 
     return selected_medians
 
