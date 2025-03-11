@@ -29,6 +29,9 @@ def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
     medians = []
 
     while step >= PRECISION:
+        if k + step > k_upper_limit:
+            print("No new solution found.")
+            break
         k += step
 
         elong_edges = alg.get_elong_edges(
