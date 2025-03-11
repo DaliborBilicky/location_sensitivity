@@ -33,42 +33,33 @@ def parse_arguments() -> tuple[str, int]:
     return region, p
 
 
-def calculate_k_values(
-    graph: gh.Graph, frac_list: list[float], denominator: float
-):
-    """
-    Starts threads for calculating all K values and the first K value.
-
-    Args:
-        graph (gh.Graph): The graph instance.
-        frac_list (list[float]): Fractional list for K calculation.
-        denominator (float): Denominator for K calculations.
-    """
-    k_upper_limit = alg.get_k_upper_limit(frac_list, denominator)
-    args = (graph, frac_list, denominator, k_upper_limit)
-
-    thread_all_ks = threading.Thread(target=alg.calculate_all_ks, args=args)
-    thread_first_k = threading.Thread(target=alg.calculate_first_k, args=args)
-
-    thread_all_ks.start()
-    thread_first_k.start()
-
-    thread_all_ks.join()
-    thread_first_k.join()
-
-
 def main():
     """
     Main function.
     """
     try:
         region, p = parse_arguments()
-        graph = gh.Graph(region, p)
+        graph = gh.Graph(region)
 
         frac_list = alg.get_frac_list(graph)
         denominator = sum(frac_list)
+        k_upper_limit = alg.get_k_upper_limit(frac_list, denominator) - 1
 
-        calculate_k_values(graph, frac_list, denominator)
+        threads = []
+
+        for p in range(15, 26):
+            args = (graph, frac_list, denominator, k_upper_limit, p)
+            threads.append(
+                threading.Thread(target=alg.calculate_first_k, args=args)
+            )
+
+        for t in threads:
+            print("starting")
+            t.start()
+
+        for t in threads:
+            t.join()
+            print("joining")
 
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)

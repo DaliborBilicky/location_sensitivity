@@ -6,7 +6,7 @@ class Graph:
     Represents a graph with vertices and edges, supporting operations such as distance matrix creation.
     """
 
-    def __init__(self, region: str, p: int):
+    def __init__(self, region: str):
         """
         Initializes a Graph instance by loading vertices and edges from region-specific files.
 
@@ -27,7 +27,6 @@ class Graph:
         self.num_of_verts = len(self.vertices)
         self.dist_matrix = alg.create_dist_matrix(self.edges, self.num_of_verts)
         self.region = region
-        self.p = p
 
     def __str__(self) -> str:
         """

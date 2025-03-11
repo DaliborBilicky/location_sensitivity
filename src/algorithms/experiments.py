@@ -1,12 +1,19 @@
 import math
 
 import algorithms as alg
+import graph as gh
 
 TOLERANCE = 0.001
 PRECISION = 0.01
 
 
-def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
+def calculate_first_k(
+    graph: gh.Graph,
+    frac_list: list[float],
+    denominator: float,
+    k_upper_limit: float,
+    p: int,
+):
     """
     Calculates the first significant value of k where the p-median solution changes.
 
@@ -19,11 +26,12 @@ def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
         frac_list (list[float]): A list of fraction values used to scale edge costs.
         denominator (float): The scaling denominator applied to k for edge elongation.
         k_upper_limit (float): The maximum value to test for k.
+        p (int): Number of weighted p medians.
     """
     k = 0
     step = k_upper_limit / 2
     previous_medians = alg.pulp_solve_p_median(
-        graph.dist_matrix, graph.vertices, graph.p
+        graph.dist_matrix, graph.vertices, p
     )
     elong_edges = []
     medians = []
@@ -42,9 +50,7 @@ def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
             elong_edges, graph.num_of_verts
         )
 
-        medians = alg.pulp_solve_p_median(
-            elong_dist_matrix, graph.vertices, graph.p, True
-        )
+        medians = alg.pulp_solve_p_median(elong_dist_matrix, graph.vertices, p)
 
         if medians != previous_medians:
             k -= step
@@ -60,17 +66,23 @@ def calculate_first_k(graph, frac_list, denominator, k_upper_limit):
         k_upper_limit,
         cost_ratios,
         medians,
-        f"{graph.region}-{graph.p}-calculate-first-k",
+        f"{graph.region}-{p}-calculate-first-k",
     )
     alg.output_edge_behavior(
         graph.edges,
         elong_edges,
         medians,
-        f"{graph.region}-{graph.p}-calculate-first-k",
+        f"{graph.region}-{p}-calculate-first-k",
     )
 
 
-def calculate_all_ks(graph, frac_list, denominator, k_upper_limit):
+def calculate_all_ks(
+    graph: gh.Graph,
+    frac_list: list[float],
+    denominator: float,
+    k_upper_limit: float,
+    p: int,
+):
     """
     Iteratively calculates values of k and evaluates the p-median problem
     for each step until k approaches the upper limit.
@@ -84,6 +96,7 @@ def calculate_all_ks(graph, frac_list, denominator, k_upper_limit):
         frac_list (list[float]): A list of fraction values used to scale edge costs.
         denominator (float): The scaling denominator applied to k for edge elongation.
         k_upper_limit (float): The maximum value to increment k towards.
+        p (int): Number of weighted p medians.
     """
     k = 0
     step = k_upper_limit
@@ -100,7 +113,7 @@ def calculate_all_ks(graph, frac_list, denominator, k_upper_limit):
         )
 
         medians = alg.pulp_solve_p_median(
-            elong_dist_matrix, graph.vertices, graph.p, True
+            elong_dist_matrix, graph.vertices, p, True
         )
 
         if previous_medians != medians:
@@ -115,13 +128,13 @@ def calculate_all_ks(graph, frac_list, denominator, k_upper_limit):
                 k_upper_limit,
                 cost_ratios,
                 medians,
-                f"{graph.region}-{graph.p}-calculate-all-ks",
+                f"{graph.region}-{p}-calculate-all-ks",
             )
             alg.output_edge_behavior(
                 edges_previous,
                 elong_edges,
                 medians,
-                f"{graph.region}-{graph.p}-calculate-all-ks",
+                f"{graph.region}-{p}-calculate-all-ks",
             )
 
         step /= 2
