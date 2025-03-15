@@ -1,5 +1,4 @@
 import sys
-import threading
 
 import algorithms as alg
 import graph as gh
@@ -43,23 +42,9 @@ def main():
 
         frac_list = alg.get_frac_list(graph)
         denominator = sum(frac_list)
+
         k_upper_limit = alg.get_k_upper_limit(frac_list, denominator) - 1
-
-        threads = []
-
-        for p in range(15, 26):
-            args = (graph, frac_list, denominator, k_upper_limit, p)
-            threads.append(
-                threading.Thread(target=alg.calculate_first_k, args=args)
-            )
-
-        for t in threads:
-            print("starting")
-            t.start()
-
-        for t in threads:
-            t.join()
-            print("joining")
+        alg.calculate_first_k(graph, frac_list, denominator, k_upper_limit, p)
 
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)

@@ -4,7 +4,7 @@ import algorithms as alg
 import graph as gh
 
 TOLERANCE = 0.001
-PRECISION = 0.01
+PRECISION = 0.1
 
 
 def calculate_first_k(
@@ -30,16 +30,14 @@ def calculate_first_k(
     """
     k = 0
     step = k_upper_limit / 2
+    print(f"Solved for k: {k}")
     previous_medians = alg.pulp_solve_p_median(
-        graph.dist_matrix, graph.vertices, p
+        graph.dist_matrix, graph.vertices, p, True
     )
     elong_edges = []
     medians = []
 
-    while step >= PRECISION:
-        if k + step > k_upper_limit:
-            print("No new solution found.")
-            break
+    while step >= PRECISION and k + step <= k_upper_limit:
         k += step
 
         elong_edges = alg.get_elong_edges(
@@ -50,7 +48,10 @@ def calculate_first_k(
             elong_edges, graph.num_of_verts
         )
 
-        medians = alg.pulp_solve_p_median(elong_dist_matrix, graph.vertices, p)
+        print(f"Solved for k: {k}")
+        medians = alg.pulp_solve_p_median(
+            elong_dist_matrix, graph.vertices, p, True
+        )
 
         if medians != previous_medians:
             k -= step
@@ -112,6 +113,7 @@ def calculate_all_ks(
             elong_edges, graph.num_of_verts
         )
 
+        print(f"Solved for k: {k}\n")
         medians = alg.pulp_solve_p_median(
             elong_dist_matrix, graph.vertices, p, True
         )

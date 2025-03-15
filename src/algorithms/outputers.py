@@ -29,6 +29,8 @@ def output_solution(
     modus = AVG_SPEED - AVG_SPEED / stt.mode(cost_ratios)
 
     with open(f"results/{file}.txt", "a") as f:
+        if k >= k_lim:
+            f.write("Elongation didn't change solution.\n")
         f.write(
             "----------\n"
             f"k: {k:.4f}, upper limit: {k_lim:.4f}\n"
