@@ -2,7 +2,7 @@ import statistics as stt
 
 import graph as gh
 
-AVG_SPEED = 110  # Define constant for average speed
+SPEED = 110  # Define constant for speed
 
 
 def output_solution(
@@ -23,10 +23,10 @@ def output_solution(
         file (str): The name of the output file.
     """
 
-    minimum = AVG_SPEED - AVG_SPEED / min(cost_ratios)
-    maximum = AVG_SPEED - AVG_SPEED / max(cost_ratios)
-    average = AVG_SPEED - AVG_SPEED / stt.mean(cost_ratios)
-    modus = AVG_SPEED - AVG_SPEED / stt.mode(cost_ratios)
+    minimum = SPEED - (max(cost_ratios) * SPEED)
+    maximum = SPEED - (min(cost_ratios) * SPEED)
+    average = SPEED - (stt.mean(cost_ratios) * SPEED)
+    modus = SPEED - (stt.mode(cost_ratios) * SPEED)
 
     with open(f"results/{file}.txt", "a") as f:
         if k >= k_lim:
@@ -35,7 +35,7 @@ def output_solution(
             "----------\n"
             f"k: {k:.4f}, upper limit: {k_lim:.4f}\n"
             f"Weighted p-medians:\n{medians}\n"
-            f"Average speed for ambulance: {AVG_SPEED}\n"
+            f"Speed of ambulance: {SPEED}\n"
             f"Min speed decline: {minimum:.4f}\n"
             f"Max speed decline: {maximum:.4f}\n"
             f"Average speed decline: {average:.4f}\n"
@@ -61,7 +61,9 @@ def output_edge_behavior(
 
     edges_with_ratios = zip(original_edges, elongated_edges)
     sorted_edges = sorted(
-        edges_with_ratios, key=lambda pair: pair[1].cost / pair[0].cost
+        edges_with_ratios,
+        key=lambda pair: pair[0].cost / pair[1].cost,
+        reverse=True,
     )
 
     smallest_decline = sorted_edges[:10]
@@ -69,12 +71,12 @@ def output_edge_behavior(
 
     incident_edges = [
         (original, elongated)
-        for original, elongated in zip(original_edges, elongated_edges)
+        for original, elongated in sorted_edges
         if original.v1 in medians or original.v2 in medians
     ]
 
     incident_edge_ratios = [
-        (original, elongated, elongated.cost / original.cost)
+        (original, elongated, original.cost / elongated.cost)
         for original, elongated in incident_edges
     ]
 
@@ -86,8 +88,8 @@ def output_edge_behavior(
                 f"{label}\nSpeed decline, edge -> elongated cost\n"
             )
             for original, elongated in zipped_edges:
-                ratio = elongated.cost / original.cost
-                speed = AVG_SPEED - AVG_SPEED / ratio
+                ratio = original.cost / elongated.cost
+                speed = SPEED - (ratio * SPEED)
                 f.write(f"{speed:.4f}, {original} -> {elongated.cost:.4f}\n")
 
         write_zipped_edges("Smallest speed declines:", smallest_decline)
@@ -100,6 +102,6 @@ def output_edge_behavior(
         )
 
         for original, elongated, ratio in incident_edge_ratios:
-            speed = AVG_SPEED - AVG_SPEED / ratio
+            speed = SPEED - (ratio * SPEED)
             f.write(f"{speed:.4f}, {original} -> {elongated.cost:.4f}\n")
         f.write("\n")

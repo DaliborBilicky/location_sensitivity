@@ -58,7 +58,7 @@ def calculate_first_k(
             step /= 2
 
     cost_ratios = [
-        elong_edges[i].cost / graph.edges[i].cost
+        graph.edges[i].cost / elong_edges[i].cost
         for i in range(len(elong_edges))
     ]
 
@@ -121,7 +121,7 @@ def calculate_all_ks(
         if previous_medians != medians:
             previous_medians = medians
             cost_ratios = [
-                elong_edges[i].cost / edges_previous[i].cost
+                edges_previous[i].cost / elong_edges[i].cost
                 for i in range(len(elong_edges))
             ]
 
