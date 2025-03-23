@@ -50,7 +50,8 @@ def output_edge_behavior(
     file: str,
 ):
     """
-    Outputs the edge elongation behavior, including smallest and biggest ratio changes, and incident edges.
+    Outputs the edge elongation behavior, including smallest
+    and biggest ratio changes, and incident edges.
 
     Args:
         original_edges (list[gh.Edge]): The original edges.
