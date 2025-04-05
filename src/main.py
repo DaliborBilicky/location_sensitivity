@@ -56,8 +56,7 @@ def main():
             alg.calculate_all_ks(
                 graph, frac_list, denominator, k_upper_limit, p
             )
-
-        if option == "F":
+        elif option == "F":
             alg.calculate_first_k(
                 graph, frac_list, denominator, k_upper_limit, p
             )

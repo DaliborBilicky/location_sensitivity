@@ -1,6 +1,7 @@
 class Vertex:
     """
-    Represents a vertex in a graph with a label, optional weight, and a descriptive name.
+    Represents a vertex in a graph with a label, optional weight, and a
+    descriptive name.
     """
 
     def __init__(self, label: int, weight: float = 0.0, name: str = "Junction"):
@@ -9,8 +10,10 @@ class Vertex:
 
         Args:
             label (int): A unique identifier for the vertex.
-            weight (float, optional): The weight or value associated with the vertex. Default is 0.0.
-            name (str, optional): A human-readable name for the vertex. Default is "Junction".
+            weight (float, optional): The weight or value associated with the
+            vertex. Default is 0.0.
+            name (str, optional): A human-readable name for the vertex. Default
+            is "Junction".
         """
         self.label = label
         self.weight = weight

@@ -11,7 +11,8 @@ def get_frac_list(graph: gh.Graph) -> list[float]:
     vertex weights and distances, used for edge elongation calculations.
 
     Args:
-        graph (gh.Graph): The graph object containing vertices, edges, and the distance matrix.
+        graph (gh.Graph): The graph object containing vertices, edges, and the
+        distance matrix.
 
     Returns:
         list[float]: A list of fraction values, one for each edge in the graph.

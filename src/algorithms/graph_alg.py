@@ -11,7 +11,8 @@ def read_edges(file_path: str) -> list[gh.Edge]:
 
     The input file is expected to have lines with three integers each:
         vertex_1 vertex_2 weight
-    Vertices are assumed to be 1-indexed in the file and are converted to 0-indexing.
+    Vertices are assumed to be 1-indexed in the file and are converted to
+    0-indexing.
 
     Args:
         file_path (str): The path to the file containing edge data.
@@ -36,13 +37,15 @@ def read_vertices(file_path: str) -> list[gh.Vertex]:
     The input file should have lines in the format:
         label weight name
     The label is mandatory, while weight and name are optional.
-    Vertices are assumed to be 1-indexed in the file and are converted to 0-indexing.
+    Vertices are assumed to be 1-indexed in the file and are converted to
+    0-indexing.
 
     Args:
         file_path (str): The path to the file containing vertex data.
 
     Returns:
-        list[gh.Vertex]: A list of Vertex objects with label, weight, and name properties.
+        list[gh.Vertex]: A list of Vertex objects with label, weight, and name
+        properties.
     """
     vertices = []
     with open(file_path, "r") as file:
@@ -62,10 +65,13 @@ def read_vertices(file_path: str) -> list[gh.Vertex]:
 
 def create_dist_matrix(edges: list[gh.Edge], num_of_verts: int) -> np.ndarray:
     """
-    Creates a distance matrix for the given edges and vertices using the Floyd-Warshall algorithm.
+    Creates a distance matrix for the given edges and vertices using the
+    Floyd-Warshall algorithm.
 
-    The resulting matrix contains the shortest path distances between all pairs of vertices.
-    Diagonal elements are 0, and non-connected vertices have a distance of infinity.
+    The resulting matrix contains the shortest path distances between all pairs
+    of vertices.
+    Diagonal elements are 0, and non-connected vertices have a distance of
+    infinity.
 
     Args:
         edges (list[gh.Edge]): A list of edges connecting vertices in the graph.

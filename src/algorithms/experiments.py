@@ -15,24 +15,28 @@ def calculate_first_k(
     p: int,
 ):
     """
-    Calculates the first significant value of k where the p-median solution changes.
+    Calculates the first significant value of k where the p-median solution
+    changes.
 
     This function uses a binary search approach to find the smallest value of k
-    that results in a different solution to the p-median problem when edge lengths
-    are elongated by a factor based on k.
+    that results in a different solution to the p-median problem when edge
+    lengths are elongated by a factor based on k.
 
     Args:
-        graph (gh.Graph): The graph object containing vertices, edges, and the distance matrix.
-        frac_list (list[float]): A list of fraction values used to scale edge costs.
-        denominator (float): The scaling denominator applied to k for edge elongation.
+        graph (gh.Graph): The graph object containing vertices, edges, and the
+        distance matrix.
+        frac_list (list[float]): A list of fraction values used to scale edge
+        costs.
+        denominator (float): The scaling denominator applied to k for edge
+        elongation.
         k_upper_limit (float): The maximum value to test for k.
         p (int): Number of weighted p medians.
     """
     k = 0
     step = k_upper_limit / 2
-    print(f"Solved for k: {k}")
-    previous_medians = alg.pulp_solve_p_median(
-        graph.dist_matrix, graph.vertices, p, True
+    print(f"Solving for k: {k:.4f}")
+    previous_medians = alg.pulp_solve(
+        graph.dist_matrix, graph.vertices, p, alg.P_MEDIAN
     )
     elong_edges = []
     medians = []
@@ -48,9 +52,9 @@ def calculate_first_k(
             elong_edges, graph.num_of_verts
         )
 
-        print(f"Solved for k: {k}")
-        medians = alg.pulp_solve_p_median(
-            elong_dist_matrix, graph.vertices, p, True
+        print(f"Solving for k: {k:.4f}")
+        medians = alg.pulp_solve(
+            elong_dist_matrix, graph.vertices, p, alg.P_MEDIAN
         )
 
         if medians != previous_medians:
@@ -93,9 +97,12 @@ def calculate_all_ks(
     edge cost elongations, such as min, max, mean, and mode of the cost ratios.
 
     Args:
-        graph (gh.Graph): The graph object containing vertices, edges, and the distance matrix.
-        frac_list (list[float]): A list of fraction values used to scale edge costs.
-        denominator (float): The scaling denominator applied to k for edge elongation.
+        graph (gh.Graph): The graph object containing vertices, edges, and the
+        distance matrix.
+        frac_list (list[float]): A list of fraction values used to scale edge
+        costs.
+        denominator (float): The scaling denominator applied to k for edge
+        elongation.
         k_upper_limit (float): The maximum value to increment k towards.
         p (int): Number of weighted p medians.
     """
@@ -113,9 +120,9 @@ def calculate_all_ks(
             elong_edges, graph.num_of_verts
         )
 
-        print(f"Solved for k: {k}\n")
-        medians = alg.pulp_solve_p_median(
-            elong_dist_matrix, graph.vertices, p, True
+        print(f"Solving for k: {k}")
+        medians = alg.pulp_solve(
+            elong_dist_matrix, graph.vertices, p, alg.P_MEDIAN
         )
 
         if previous_medians != medians:
