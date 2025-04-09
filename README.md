@@ -134,8 +134,7 @@ application.
 This installation guide is based on instructions from [Python's official 
 tutorial on venv](https://docs.python.org/3/tutorial/venv.html).
 
-
-### Usage
+## Usage
 
 To start the application, open your terminal and run the following command:
 
@@ -143,7 +142,7 @@ To start the application, open your terminal and run the following command:
 python src/main.py <option> <region acronym> <P>
 ```
 
-#### Arguments
+### Arguments
 
 - `<option>`  
   Type of experiment to run:
@@ -166,15 +165,13 @@ python src/main.py <option> <region acronym> <P>
 - `<P>`  
   The number of facilities to locate (e.g., ambulance or fire stations).
 
----
-
-#### Example
+### Example
 
 ```bash
 python src/main.py A ZA 12
 ```
 
-### Output
+## Output
 
 All result files are saved in the `./results/` directory.
 The output is stored in files with the following names:
@@ -195,7 +192,7 @@ parameter `k`. The output includes:
   - Original and elongated edge cost
 - **Edges connected to selected p-medians** with their respective speed declines
 
-#### Example snippet:
+### Example snippet:
 
 ```text
 k: 6.9357, upper limit: 44.3887
