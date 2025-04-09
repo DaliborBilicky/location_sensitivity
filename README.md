@@ -37,25 +37,103 @@ parameters of the given graph.
 
 ### Python interpreter
 
-Need to have installed python. Newest version is the best choice. I was working
-on 3.13.2.
+To run this application, you need to have Python installed on your system. 
+I recommend using the latest stable version of Python for the best 
+compatibility. For this project, I used Python version 3.13.2.
 
-### Cloning the repo
+You can download the latest version of Python from the official Python website:  
+[https://www.python.org/downloads/](https://www.python.org/downloads/)
+
+To verify that Python is installed correctly, you can run the following command
+in your terminal:
+
+```bash
+python --version
+```
+
+If Python is installed, this will return the installed version number.
+
+### Cloning the repository
+
+To get started with the project, you'll need to clone the GitHub repository to
+your local machine.
+
+Open your terminal and run the following command to clone the repository:
 
 ```bash
 git clone https://github.com/DaliborBilicky/location_sensitivity.git
 ```
 
-### Installing libraries
+This will create a folder named `location_sensitivity` containing the project 
+files. Navigate to the project folder:
 
-**Note:** I recommend creating a virtual environment and than installing the 
-libraries
+```bash
+cd location_sensitivity
+```
 
-[Tutorial how to make virtual environment](https://docs.python.org/3/tutorial/venv.html)
+From here, you can follow the steps to install the required libraries and set 
+up the environment for running the application.
+
+## Installing libraries
+
+Before running the application, you'll need to install the required libraries. 
+I recommend setting up a virtual environment to manage dependencies easily.
+
+### Creating a virtual environment (optional but recommended)
+
+1. Create a virtual environment (you can name it `venv` or any name you prefer):
+
+    ```bash
+    python3 -m venv venv
+    ```
+
+2. Activate the virtual environment:
+
+    - On **Windows**:
+
+        ```bash
+        .\venv\Scripts\activate
+        ```
+
+    - On **macOS/Linux**:
+
+        ```bash
+        source venv/bin/activate
+        ```
+
+    Once the virtual environment is activated, your terminal prompt will change,
+    indicating that you're working inside the virtual environment.
+
+### Installing required libraries
+
+With the virtual environment activated, install the required Python libraries 
+using the `requirements.txt` file:
 
 ```bash
 pip install -r requirements.txt
 ```
+
+This will automatically install all necessary dependencies for the project.
+
+**Note:** You can always check which libraries are installed by running:
+
+```bash
+pip freeze
+```
+
+If you encounter any issues during installation, make sure that you have the 
+necessary Python version installed and that your pip is up-to-date:
+
+```bash
+python -m pip install --upgrade pip
+```
+
+After completing these steps, your environment will be ready to run the 
+application.
+
+This installation guide is based on instructions from [Python's official 
+tutorial on venv](https://docs.python.org/3/tutorial/venv.html).
+
 
 ### Usage
 
@@ -69,11 +147,13 @@ python src/main.py <option> <region acronym> <P>
 
 - `<option>`  
   Type of experiment to run:
-  - `A` – Tests how the optimal solution changes as the sensitivity parameter `k` increases.
+  - `A` – Tests how the optimal solution changes as the sensitivity parameter 
+  `k` increases.
   - `F` – Finds the first value of `k` where the optimal solution changes.
 
 - `<region acronym>`  
-  Region to run the experiment on. Choose one of the following Slovak region acronyms:
+  Region to run the experiment on. Choose one of the following Slovak region 
+  acronyms:
   - `BA` – Bratislava  
   - `TT` – Trnava  
   - `NR` – Nitra  
