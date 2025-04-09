@@ -1,10 +1,18 @@
 # Testing location optimal solution sensitivity
 
-## Table of contents
+## Table of Contents
 
 - [Description](#description)
+  - [Goals of the project](#goals-of-the-project)
 - [Download and install](#download-and-install)
-- [Usage](#usage) 
+  - [Python interpreter](#python-interpreter)
+  - [Cloning the repo](#cloning-the-repo)
+  - [Installing libraries](#installing-libraries)
+- [Usage](#usage)
+  - [Arguments](#arguments)
+  - [Example](#example)
+- [Output](#output)
+  - [Example snippet](#example-snippet)
 
 ## Description
 
