@@ -35,11 +35,28 @@ def calculate_first_k(
     k = 0
     step = k_upper_limit / 2
     print(f"Solving for k: {k:.4f}")
-    previous_medians = alg.pulp_solve(
-        graph.dist_matrix, graph.vertices, p, alg.P_MEDIAN
+    previous_medians, previous_objective = alg.pulp_solve(
+        graph.dist_matrix, graph.vertices, p, alg.P_MEDIAN, graph.city_bound
     )
     elong_edges = []
     medians = []
+    objective = 0.0
+    cost_ratios = [1.0 for _ in graph.edges]
+
+    alg.output_solution(
+        k,
+        k_upper_limit,
+        cost_ratios,
+        previous_medians,
+        previous_objective,
+        f"{graph.region}-{p}-calculate-first-k",
+    )
+    alg.output_edge_behavior(
+        graph.edges,
+        graph.edges,
+        previous_medians,
+        f"{graph.region}-{p}-calculate-first-k",
+    )
 
     while step >= PRECISION and k + step <= k_upper_limit:
         k += step
@@ -53,8 +70,8 @@ def calculate_first_k(
         )
 
         print(f"Solving for k: {k:.4f}")
-        medians = alg.pulp_solve(
-            elong_dist_matrix, graph.vertices, p, alg.P_MEDIAN
+        medians, objective = alg.pulp_solve(
+            elong_dist_matrix, graph.vertices, p, alg.P_MEDIAN, graph.city_bound
         )
 
         if medians != previous_medians:
@@ -71,6 +88,7 @@ def calculate_first_k(
         k_upper_limit,
         cost_ratios,
         medians,
+        objective,
         f"{graph.region}-{p}-calculate-first-k",
     )
     alg.output_edge_behavior(
@@ -120,9 +138,9 @@ def calculate_all_ks(
             elong_edges, graph.num_of_verts
         )
 
-        print(f"Solving for k: {k}")
-        medians = alg.pulp_solve(
-            elong_dist_matrix, graph.vertices, p, alg.P_MEDIAN
+        print(f"Solving for k: {k:.4f}")
+        medians, objective = alg.pulp_solve(
+            elong_dist_matrix, graph.vertices, p, alg.P_MEDIAN, graph.city_bound
         )
 
         if previous_medians != medians:
@@ -137,6 +155,7 @@ def calculate_all_ks(
                 k_upper_limit,
                 cost_ratios,
                 medians,
+                objective,
                 f"{graph.region}-{p}-calculate-all-ks",
             )
             alg.output_edge_behavior(

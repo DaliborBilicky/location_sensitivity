@@ -30,7 +30,7 @@ def read_edges(file_path: str) -> list[gh.Edge]:
     return edges
 
 
-def read_vertices(file_path: str) -> list[gh.Vertex]:
+def read_vertices(file_path: str) -> tuple[list[gh.Vertex], int]:
     """
     Reads vertices from a file and returns them as a list of Vertex objects.
 
@@ -44,10 +44,14 @@ def read_vertices(file_path: str) -> list[gh.Vertex]:
         file_path (str): The path to the file containing vertex data.
 
     Returns:
-        list[gh.Vertex]: A list of Vertex objects with label, weight, and name
-        properties.
+        tuple:
+            - list[gh.Vertex]: A list of Vertex objects with label, weight,
+            and name attributes.
+            - int: The index boundary (city_bound) separating city nodes from
+            junction nodes.
     """
     vertices = []
+    city_bound = 0
     with open(file_path, "r") as file:
         file.readline()
         for line in file:
@@ -55,12 +59,14 @@ def read_vertices(file_path: str) -> list[gh.Vertex]:
             label = int(parts[0]) - 1
             if len(parts) < 3:
                 vertices.append(gh.Vertex(label))
+                if city_bound == 0:
+                    city_bound = label
             else:
                 weight = float(parts[1])
                 name = parts[2]
                 vertices.append(gh.Vertex(label, weight, name))
 
-    return vertices
+    return vertices, city_bound
 
 
 def create_dist_matrix(edges: list[gh.Edge], num_of_verts: int) -> np.ndarray:

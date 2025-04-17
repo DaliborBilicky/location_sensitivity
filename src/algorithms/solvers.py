@@ -73,7 +73,10 @@ def add_additional_constraint(
     problem: pl.LpProblem,
     x: dict[tuple, pl.LpVariable],
     z: pl.LpVariable,
+    n: int,
+    m: int,
     dist_matrix: np.ndarray,
+    vertices: list[gh.Vertex],
 ):
     """
     Adds the max-distance constraint used in the p-center problem.
@@ -84,19 +87,23 @@ def add_additional_constraint(
         problem (pl.LpProblem): The LP problem to add constraints to.
         x (dict[tuple, pl.LpVariable]): Assignment variables.
         z (pl.LpVariable): Maximum distance variable.
+        n (int): Number of demand nodes (vertices).
+        m (int): Number of potential medians (facilities).
         dist_matrix (np.ndarray): Matrix of distances between vertices and
         medians.
+        vertices (list[gh.Vertex]): List of vertex objects, each with a weight
+        attribute.
     """
-    n, m = dist_matrix.shape
-    for j in range(m):
-        problem += (
-            pl.lpSum(dist_matrix[i][j] * x[(i, j)] for i in range(n)) <= z
-        )
+    for i in range(n):
+        for j in range(m):
+            problem += vertices[i].weight * dist_matrix[i][j] * x[(i, j)] <= z
 
 
 def set_objective(
     problem: pl.LpProblem,
     x: dict[tuple, pl.LpVariable],
+    n: int,
+    m: int,
     dist_matrix: np.ndarray,
     vertices: list[gh.Vertex],
 ):
@@ -108,12 +115,13 @@ def set_objective(
     Args:
         problem (pl.LpProblem): The LP problem to set the objective for.
         x (dict[tuple, pl.LpVariable]): Assignment variables.
+        n (int): Number of demand nodes (vertices).
+        m (int): Number of potential medians (facilities).
         dist_matrix (np.ndarray): Matrix of distances between vertices and
         medians.
         vertices (list[gh.Vertex]): List of vertex objects, each with a weight
         attribute.
     """
-    n, m = dist_matrix.shape
     problem += pl.lpSum(
         vertices[i].weight * dist_matrix[i][j] * x[(i, j)]
         for i in range(n)
@@ -126,7 +134,8 @@ def pulp_solve(
     vertices: list[gh.Vertex],
     p: int,
     problem_type: str,
-) -> list[int]:
+    city_bound: int = 0,
+) -> tuple[list[int], float]:
     """
     Solves the p-median or p-center problem using PuLP.
 
@@ -135,6 +144,9 @@ def pulp_solve(
         vertices (list[gh.Vertex]): List of vertex objects with weights.
         p (int): Number of medians to select.
         problem_type (str): Type of problem to solve ('p_median' or 'p_center').
+        city_limit (int, optional): Index where junctions start in the vertex
+        list. Facilities can only be placed at indices [0, city_limit). If set
+        to 0, no restriction is applied (all vertices are eligible).
 
     Returns:
         list[int]: Indices of the selected median locations.
@@ -147,22 +159,24 @@ def pulp_solve(
 
     add_constraints(problem, x, y, n, m, p)
 
-    if problem_type == P_MEDIAN:
-        set_objective(problem, x, dist_matrix, vertices)
-    elif problem_type == P_CENTER:
-        add_additional_constraint(problem, x, z, dist_matrix)
-        problem += z
-    else:
-        raise ValueError(f"Unknown problem type: {problem_type}")
+    if city_bound != 0:
+        for j in range(city_bound, m):
+            problem += y[j] == 0
 
-    solver = pl.getSolver("PULP_CBC_CMD", msg=True)
-    problem.solve(solver)
+    if problem_type == P_MEDIAN:
+        set_objective(problem, x, n, m, dist_matrix, vertices)
+    if problem_type == P_CENTER:
+        add_additional_constraint(problem, x, z, n, m, dist_matrix, vertices)
+        problem += z
+
+    problem.solve()
 
     selected_set = [j for j in range(m) if y[j].varValue == 1.0]
+    objective = pl.value(problem.objective)
 
     print(f"Selected set: {selected_set}\n")
 
-    return selected_set
+    return selected_set, objective
 
 
 def brut_force(graph: gh.Graph, p: int) -> list[gh.Vertex]:

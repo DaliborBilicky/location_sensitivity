@@ -10,6 +10,7 @@ def output_solution(
     k_lim: float,
     cost_ratios: list[float],
     medians: list[int],
+    objective: float,
     file: str,
 ):
     """
@@ -18,6 +19,7 @@ def output_solution(
     Args:
         k (float): The value of k for the elongation.
         k_lim (float): The upper limit for k.
+        objective (float): Objective value of solution.
         cost_ratios (list[float]): List of cost ratios for edge elongation.
         medians (list[int]): List of the p-median vertex labels.
         file (str): The name of the output file.
@@ -34,6 +36,7 @@ def output_solution(
         f.write(
             "----------\n"
             f"k: {k:.4f}, upper limit: {k_lim:.4f}\n"
+            f"Objective value: {objective:.4f}\n"
             f"Weighted p-medians:\n{medians}\n"
             f"Speed of ambulance: {SPEED}\n"
             f"Min speed decline: {minimum:.4f}\n"

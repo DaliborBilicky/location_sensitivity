@@ -22,7 +22,7 @@ class Graph:
             - Nodes file: VUC140318_<region>_nodes.txt
             - Edges file: VUC140318_<region>_edges.txt
         """
-        self.vertices = alg.read_vertices(
+        self.vertices, self.city_bound = alg.read_vertices(
             f"./res/Kraje_input_data/VUC140318_{region}_nodes.txt"
         )
         self.edges = alg.read_edges(
