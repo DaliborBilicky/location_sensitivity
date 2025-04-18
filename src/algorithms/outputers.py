@@ -31,10 +31,10 @@ def output_solution(
     modus = SPEED - (stt.mode(cost_ratios) * SPEED)
 
     with open(f"results/{file}.txt", "a") as f:
+        f.write("----------\n")
         if k >= k_lim:
             f.write("Elongation didn't change solution.\n")
         f.write(
-            "----------\n"
             f"k: {k:.4f}, upper limit: {k_lim:.4f}\n"
             f"Objective value: {objective:.4f}\n"
             f"Weighted p-medians:\n{medians}\n"

@@ -51,12 +51,6 @@ def calculate_first_k(
         previous_objective,
         f"{graph.region}-{p}-calculate-first-k",
     )
-    alg.output_edge_behavior(
-        graph.edges,
-        graph.edges,
-        previous_medians,
-        f"{graph.region}-{p}-calculate-first-k",
-    )
 
     while step >= PRECISION and k + step <= k_upper_limit:
         k += step
