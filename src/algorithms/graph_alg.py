@@ -21,7 +21,7 @@ def read_edges(file_path: str) -> list[gh.Edge]:
         list[gh.Edge]: A list of Edge objects representing the graph's edges.
     """
     edges = []
-    with open(file_path, "r") as file:
+    with open(file_path, "r", encoding='utf-8') as file:
         file.readline()
         for line in file:
             vertex_1, vertex_2, weight = map(int, line.split())
@@ -52,7 +52,7 @@ def read_vertices(file_path: str) -> tuple[list[gh.Vertex], int]:
     """
     vertices = []
     city_bound = 0
-    with open(file_path, "r") as file:
+    with open(file_path, "r", encoding='utf-8') as file:
         file.readline()
         for line in file:
             parts = line.strip().split(maxsplit=2)
