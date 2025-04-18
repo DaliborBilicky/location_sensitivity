@@ -183,6 +183,7 @@ Each file contains comprehensive statistics for a given region and sensitivity
 parameter `k`. The output includes:
 
 - **Sensitivity parameter `k`** and its **upper limit**
+- **Objective value**
 - **Selected p-medians** (indices of optimal facility locations)
 - **Speed statistics**:
   - Speed of ambulance
@@ -195,14 +196,15 @@ parameter `k`. The output includes:
 ### Example snippet:
 
 ```text
-k: 6.9357, upper limit: 44.3887
+k: 6.2422, upper limit: 44.3887
+Objective value: 16456.6566
 Weighted p-medians:
-[6, 15, 18, 33, 44, 49, 50, 51, 77, 78, 82, 83, 84, 85, 113]
+[6, 15, 18, 23, 33, 44, 49, 51, 77, 83, 84, 85]
 Speed of ambulance: 110
-Min speed decline: 0.8961
-Max speed decline: 17.2290
-Average speed decline: 3.4149
-Most often speed decline: 2.5460
+Min speed decline: 0.8086
+Max speed decline: 15.5482
+Average speed decline: 3.0817
+Most often speed decline: 2.2976
 ```
 
 Each run produces similar structured statistics, either:
